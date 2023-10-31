@@ -6,6 +6,14 @@ import "phaser";
 class CockroachSmasherGame extends Phaser.Scene {
   private score: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
+  private squishSound!:
+    | Phaser.Sound.NoAudioSound
+    | Phaser.Sound.HTML5AudioSound
+    | Phaser.Sound.WebAudioSound;
+  private aakhSound!:
+    | Phaser.Sound.NoAudioSound
+    | Phaser.Sound.HTML5AudioSound
+    | Phaser.Sound.WebAudioSound;
 
   constructor() {
     super({ key: "CockroachSmasherGame" });
@@ -15,6 +23,7 @@ class CockroachSmasherGame extends Phaser.Scene {
     this.load.image("cockroach", "assets/cockroach.png");
     this.load.image("fly", "assets/fly.png");
     this.load.audio("squishSound", "assets/squish.aac"); // Load the audio file
+    this.load.audio("aakhSound", "assets/aakh.mp3"); // Load the audio file
   }
 
   create() {
@@ -23,14 +32,18 @@ class CockroachSmasherGame extends Phaser.Scene {
       color: "#fff",
     });
 
-    const squishSound = this.sound.add("squishSound");
+    this.squishSound = this.sound.add("squishSound");
+    this.aakhSound = this.sound.add("aakhSound");
 
     this.input.on(
       "pointerdown",
       (_pointer: any, gameObjects: Phaser.GameObjects.Sprite[]) => {
         for (const gameObject of gameObjects) {
-          if (gameObject.texture.key === "cockroach" || gameObject.texture.key === "fly") {
-            squishSound.play();
+          if (
+            gameObject.texture.key === "cockroach" ||
+            gameObject.texture.key === "fly"
+          ) {
+            this.playDestroySound();
             gameObject.destroy();
             this.score += 10;
             this.scoreText.setText("Score: " + this.score);
@@ -49,17 +62,29 @@ class CockroachSmasherGame extends Phaser.Scene {
 
   update() { }
 
-  createAnimal() {
+  playDestroySound() {
     const random = Math.round(Math.random() * 1);
-    switch(random) {
-      case 0: 
-        this.createCockroach()
-       break
+    console.log({random})
+    switch (random) {
+      case 0:
+        this.squishSound.play();
+        break;
       case 1:
-        this.createFly()
+        this.aakhSound.play();
+        break
     }
   }
 
+  createAnimal() {
+    const random = Math.round(Math.random() * 1);
+    switch (random) {
+      case 0:
+        this.createCockroach();
+        break;
+      case 1:
+        this.createFly();
+    }
+  }
 
   createCockroach() {
     const x = Phaser.Math.Between(50, 1280);
@@ -85,9 +110,7 @@ class CockroachSmasherGame extends Phaser.Scene {
     const x = Phaser.Math.Between(50, 1280);
     const y = 900; // Set the initial y position off-screen
 
-    const fly = this.add
-      .sprite(x, y, "fly")
-      .setInteractive({ name: "fly" });
+    const fly = this.add.sprite(x, y, "fly").setInteractive({ name: "fly" });
     fly.setScale(0.2);
 
     this.tweens.add({
