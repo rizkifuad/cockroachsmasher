@@ -1,0 +1,10 @@
+{
+  "name": "Cockroach Smasher",
+  "icons": [
+    {
+      "src": "/assets/cockroach.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
