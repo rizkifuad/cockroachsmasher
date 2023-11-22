@@ -14,6 +14,10 @@ class CockroachSmasherGame extends Phaser.Scene {
     | Phaser.Sound.NoAudioSound
     | Phaser.Sound.HTML5AudioSound
     | Phaser.Sound.WebAudioSound;
+  private uuhhSound!:
+    | Phaser.Sound.NoAudioSound
+    | Phaser.Sound.HTML5AudioSound
+    | Phaser.Sound.WebAudioSound;
 
   constructor() {
     super({ key: "CockroachSmasherGame" });
@@ -24,6 +28,7 @@ class CockroachSmasherGame extends Phaser.Scene {
     this.load.image("fly", "assets/fly.png");
     this.load.audio("squishSound", "assets/squish.aac"); // Load the audio file
     this.load.audio("aakhSound", "assets/aakh.mp3"); // Load the audio file
+    this.load.audio("uuhhSound", "assets/uuhh.mp3"); // Load the audio file
   }
 
   create() {
@@ -34,20 +39,27 @@ class CockroachSmasherGame extends Phaser.Scene {
 
     this.squishSound = this.sound.add("squishSound");
     this.aakhSound = this.sound.add("aakhSound");
+    this.uuhhSound = this.sound.add("uuhhSound");
 
     this.input.on(
       "pointerdown",
       (_pointer: any, gameObjects: Phaser.GameObjects.Sprite[]) => {
+        let found = false;
         for (const gameObject of gameObjects) {
           if (
             gameObject.texture.key === "cockroach" ||
             gameObject.texture.key === "fly"
           ) {
+            found = true;
             this.playDestroySound();
             gameObject.destroy();
             this.score += 10;
             this.scoreText.setText("Score: " + this.score);
           }
+        }
+
+        if (!found) {
+          this.aakhSound.play();
         }
       },
     );
@@ -70,7 +82,7 @@ class CockroachSmasherGame extends Phaser.Scene {
         this.squishSound.play();
         break;
       case 1:
-        this.aakhSound.play();
+        this.uuhhSound.play();
         break
     }
   }
