@@ -5,8 +5,13 @@ import "phaser";
 
 class CockroachSmasherGame extends Phaser.Scene {
   private score: number = 0;
+  private miss: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
   private squishSound!:
+    | Phaser.Sound.NoAudioSound
+    | Phaser.Sound.HTML5AudioSound
+    | Phaser.Sound.WebAudioSound;
+  private ahSound!:
     | Phaser.Sound.NoAudioSound
     | Phaser.Sound.HTML5AudioSound
     | Phaser.Sound.WebAudioSound;
@@ -28,6 +33,7 @@ class CockroachSmasherGame extends Phaser.Scene {
     this.load.image("fly", "assets/fly.png");
     this.load.audio("squishSound", "assets/squish.aac"); // Load the audio file
     this.load.audio("aakhSound", "assets/aakh.mp3"); // Load the audio file
+    this.load.audio("ahSound", "assets/ah.wav"); // Load the audio file
     this.load.audio("uuhhSound", "assets/uuhh.mp3"); // Load the audio file
   }
 
@@ -39,6 +45,7 @@ class CockroachSmasherGame extends Phaser.Scene {
 
     this.squishSound = this.sound.add("squishSound");
     this.aakhSound = this.sound.add("aakhSound");
+    this.ahSound = this.sound.add("ahSound");
     this.uuhhSound = this.sound.add("uuhhSound");
 
     this.input.on(
@@ -59,7 +66,14 @@ class CockroachSmasherGame extends Phaser.Scene {
         }
 
         if (!found) {
-          this.aakhSound.play();
+          this.miss++;
+          if (this.miss % 5 === 0) {
+            this.aakhSound.setVolume(0.5);
+            this.aakhSound.play();
+          } else {
+            
+            this.ahSound.play();
+          }
         }
       },
     );
