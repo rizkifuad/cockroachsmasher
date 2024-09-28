@@ -51,30 +51,7 @@ class CockroachSmasherGame extends Phaser.Scene {
     this.input.on(
       "pointerdown",
       (_pointer: any, gameObjects: Phaser.GameObjects.Sprite[]) => {
-        let found = false;
-        for (const gameObject of gameObjects) {
-          if (
-            gameObject.texture.key === "cockroach" ||
-            gameObject.texture.key === "fly"
-          ) {
-            found = true;
-            this.playDestroySound();
-            gameObject.destroy();
-            this.score += 10;
-            this.scoreText.setText("Score: " + this.score);
-          }
-        }
-
-        if (!found) {
-          this.miss++;
-          if (this.miss % 5 === 0) {
-            this.aakhSound.setVolume(0.5);
-            this.aakhSound.play();
-          } else {
-            
-            this.ahSound.play();
-          }
-        }
+        this.shoot(_pointer, gameObjects);
       },
     );
 
@@ -86,11 +63,39 @@ class CockroachSmasherGame extends Phaser.Scene {
     });
   }
 
+  shoot(_pointer: any, gameObjects: Phaser.GameObjects.Sprite[]) {
+
+    let found = false;
+    for (const gameObject of gameObjects) {
+      if (
+        gameObject.texture.key === "cockroach" ||
+        gameObject.texture.key === "fly"
+      ) {
+        found = true;
+        this.playDestroySound();
+        gameObject.destroy();
+        this.score += 10;
+        this.scoreText.setText("Score: " + this.score);
+      }
+    }
+
+    if (!found) {
+      this.miss++;
+      if (this.miss % 5 === 0) {
+        this.aakhSound.setVolume(0.5);
+        this.aakhSound.play();
+      } else {
+
+        this.ahSound.play();
+      }
+    }
+  }
+
   update() { }
 
   playDestroySound() {
     const random = Math.round(Math.random() * 1);
-    console.log({random})
+    console.log({ random })
     switch (random) {
       case 0:
         this.squishSound.play();
@@ -157,6 +162,7 @@ const config: Phaser.Types.Core.GameConfig = {
   height: 800,
   scene: CockroachSmasherGame,
   backgroundColor: "#caa07c",
+  disableContextMenu: false,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -164,3 +170,9 @@ const config: Phaser.Types.Core.GameConfig = {
 };
 
 new Phaser.Game(config);
+
+const canvas = document.querySelector('canvas')
+if (canvas) {
+  canvas.oncontextmenu = function(e) { e.preventDefault(); e.stopPropagation(); }
+  
+}
